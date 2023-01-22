@@ -51,7 +51,7 @@ check_project() {
         fi
         echo "This is a Django project."
         python manage.py migrate
-        python manage.py run server
+        python manage.py runserver
 
     elif
         [ -f "composer.json" ]
