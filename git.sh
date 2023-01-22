@@ -250,8 +250,14 @@ push_repo() {
     echo "Type Your Branch:"
     read Branch
     git push origin $Branch
-    echo "Git push completed "
+    echo "Git push completed"
+    echo "Type Your version (MAJOR.MINOR.PATCH):"
+    read version
+    git tag -a $version -m "version $version"
+    git push origin $version
+    echo "Build tag pushed successfully"
 }
+
 
 # Main script begins here tried to use VT file but not going well so thought echo some characters directly not effiecnt but LOL
 
