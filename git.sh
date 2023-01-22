@@ -100,12 +100,12 @@ PreCommitHooks() {
 
     elif [ -f "docker-compose.yml" ]; then
         echo "This is a Docker Compose project"
-        # echo "Creating pre-commit hook to run tests..."
-        # echo "docker-compose up --build \n docker-compose exec" > .git/hooks/pre-commit
+        echo "Creating pre-commit hook to run tests..."
+        echo "docker-compose up --build" > .git/hooks/pre-commit
 
       
        
-        # chmod +x .git/hooks/pre-commit
+        chmod +x .git/hooks/pre-commit
 
     elif [ -f "composer.json" ]; then
         echo "This is a PHP project."
