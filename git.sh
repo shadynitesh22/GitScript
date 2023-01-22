@@ -202,7 +202,6 @@ build_image() {
         echo "This is a Dockerized project, building image..."
         echo "Type Your version (MAJOR.MINOR.PATCH):"
         read version
-        read imagename 
         sudo docker build -t $imagename:$version .
 
         else
@@ -210,6 +209,7 @@ build_image() {
 
     fi
 }
+
 
 
 # Will pull repo while identifying the project installing and running the project.
