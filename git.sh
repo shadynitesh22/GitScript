@@ -196,7 +196,7 @@ build_image() {
     fi
 
     echo "Checking for existing image..."
-    if docker images | awk '{print $1}' | grep -q $imagename; then
+    if sudo docker images | awk '{print $1}' | grep -q $imagename; then
         echo "Image already exists, updating..."
         # Stop and remove the existing container
         sudo docker stop mycontainer
