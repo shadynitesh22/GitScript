@@ -216,27 +216,31 @@ build_image() {
 # Will pull repo while identifying the project installing and running the project.
 
 pull_repo() {
-
-    echo "${green}Type Your origin Branch:"
+    echo "Type Your origin Branch:"
     read branch
     git pull origin $branch
     if [ $? -ne 0 ]; then
         echo "There were merge conflicts. Please resolve them before committing."
         git status
-    else
-        git add .
-        system_username=$(whoami)
-        current_date=$(date +"%d/%m/%Y %T")
-        echo Type Your Commit message:
-        read varname
-        remote_url=$(git remote -v | grep -m1 "^origin" | awk '{print $2}')
-        project_name=$(echo $remote_url | awk -F[/:] '{print $4}')
-
-        git commit -m "by $system_username on $current_date with message:$varname, Project:$project_name"
-        check_project
+        echo "Type the branch you want to merge:"
+        read merge_branch
+        git merge $merge_branch
+        if [ $? -ne 0 ]; then
+            echo "Merging failed, please resolve conflicts and try again."
+        else
+            git add .
+            system_username=$(whoami)
+            current_date=$(date +"%d/%m/%Y %T")
+            echo "Type Your Commit message:"
+            read varname
+            remote_url=$(git remote -v | grep -m1 "^origin" | awk '{print $2}')
+            project_name=$(echo $remote_url | awk -F[/:] '{print $4}')
+            git commit -m "by $system_username on $current_date with message:$varname, Project:$project_name"
+            check_project
+        fi
     fi
-}
 
+}
 # Will push the repo use commit formatter use pre commits and will also dockerize and build the image before deployment.
 
 push_repo() {
@@ -254,6 +258,7 @@ push_repo() {
     if [$? -ne 0]; then
         echo "Push failed, trying force push"
         git push -f origin $Branch
+
         if [$? -ne 0]; then
             echo"Force push also failed"
         else
