@@ -199,12 +199,12 @@ build_image() {
     if docker images | awk '{print $1}' | grep -q $imagename; then
         echo "Image already exists, updating..."
         # Stop and remove the existing container
-        docker stop mycontainer
-        docker rm mycontainer
+        sudo docker stop mycontainer
+        sudo docker rm mycontainer
         #pull the latest image
-        docker pull $imagename:$version
+        sudo docker pull $imagename:$version
         # Run the updated image
-        docker run --name mycontainer -d $imagename:$version
+        sudo docker run --name mycontainer -d $imagename:$version
     else
         echo "Building new image..."
         sudo docker build -t $imagename:$version .
@@ -294,16 +294,42 @@ echo "
 
 [19;10H            [Welcome to git shell ]" 
 
-
+#Init the folder if not and check for remote 
 init_repo
 
 add_remote
-sudo apt-get install toilet
 
-sudo apt-get install docker
+#Check the operating system.
 
-sudo apt-get pre-commit
-sudo apt install jq
+
+if [ "$(uname)" = "Darwin" ]; then
+    # Mac-specific commands
+    echo "Installing tools on Mac"
+    brew install toilet
+    brew install docker
+    brew install pre-commit
+    brew install jq
+
+elif [ "$(uname)" = "Linux" ]; then
+    # Linux-specific commands
+    echo "Installing tools on Linux"
+    sudo apt-get install toilet
+    sudo apt-get install docker
+    sudo apt-get install pre-commit
+    sudo apt-get install jq
+
+elif [ "$(uname)" = "MINGW32_NT" ]; then
+    # Windows-specific commands
+    echo "Installing tools on Windows"
+    choco install toilet
+    choco install docker-desktop
+    choco install pre-commit
+    choco install jq
+else
+    echo "Unknown Operating System"
+fi
+
+
 
 toilet -F metal "Welcome to git shell"
 
