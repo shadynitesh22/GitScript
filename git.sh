@@ -184,29 +184,30 @@ dockerize_project() {
 # Will build and tag the image here.
 
 build_image() {
+    echo "Type Your version (MAJOR.MINOR.PATCH):"
+    read version
 
-    if [ -f "Dockerfile" ]; then
-        echo "This is a Dockerized project, building image..."
-        echo "Type Your version (MAJOR.MINOR.PATCH):"
-       
-        read version
+    echo "Please type the image name:"
+    read imagename 
 
-        echo "Please type the image name"
-        
-        read imagename 
-
-        sudo docker build -t $imagename:$version .
-
-    elif [ ! -f "DockerFile" ]; then
+    if [ ! -f "Dockerfile" ]; then
+        echo "Dockerfile not found, creating..."
         dockerize_project
-        echo "This is a Dockerized project, building image..."
-        echo "Type Your version (MAJOR.MINOR.PATCH):"
-        read version
+    fi
+
+    echo "Checking for existing image..."
+    if docker images | awk '{print $1}' | grep -q $imagename; then
+        echo "Image already exists, updating..."
+        # Stop and remove the existing container
+        docker stop mycontainer
+        docker rm mycontainer
+        #pull the latest image
+        docker pull $imagename:$version
+        # Run the updated image
+        docker run --name mycontainer -d $imagename:$version
+    else
+        echo "Building new image..."
         sudo docker build -t $imagename:$version .
-
-        else
-        echo "Cannot create Image"
-
     fi
 }
 
@@ -250,12 +251,22 @@ push_repo() {
     echo "Type Your Branch:"
     read Branch
     git push origin $Branch
-    echo "Git push completed"
-    echo "Type Your version (MAJOR.MINOR.PATCH):"
-    read version
-    git tag -a $version -m "version $version"
-    git push origin $version
-    echo "Build tag pushed successfully"
+    if [$? -ne 0]; then
+        echo "Push failed, trying force push"
+        git push -f origin $Branch
+        if [$? -ne 0]; then
+            echo"Force push also failed"
+        else
+            echo"Force push successful"
+            fi
+    else
+        echo "Git push completed"
+        echo "Type Your version (MAJOR.MINOR.PATCH):"
+        read version
+        git tag -a $version -m "version $version"
+        git push origin $version
+        echo "Build tag pushed successfully"
+    fi
 }
 
 
